@@ -13,8 +13,20 @@ const PORT = process.env.PORT || 3000;
 dns.setServers(['8.8.8.8']); // Google’s DNS resolver
 
 // Middleware setup
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://gigsapp.netlify.app', 
+];
+
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, origin);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
